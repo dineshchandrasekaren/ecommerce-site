@@ -1,5 +1,5 @@
 const bcryptjs = require("bcryptjs");
-const jsonwebtoken = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const { mongoose } = require("mongoose");
 const validator = require("validator");
 const crypto = require("crypto");
@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
     ],
     unique: true,
   },
-  email: {
+  password: {
     type: String,
     required: [true, "Please provide an password"],
     minlength: [6, "password should be atleast 6 character"],
@@ -45,25 +45,27 @@ const UserSchema = new mongoose.Schema({
   },
 });
 UserSchema.pre("save", async function (next) {
-  if (!UserSchema.isModified("password")) {
+  if (!this.isModified("password")) {
     return next();
   }
   this.password = await bcryptjs.hash(this.password, 10);
   next();
 });
-UserSchema.method.validatePassword = async (usersendPassword) =>
-  await bcryptjs.compare(usersendPassword, this.password);
+UserSchema.methods.validatePassword = async function (usersendPassword) {
+  return await bcryptjs.compare(usersendPassword, this.password);
+};
 
-UserSchema.method.getToken = async () =>
-  await jsonwebtoken.sign({ id: this._id }, process.env.PRIVATE_KEY, {
+UserSchema.methods.getToken = async function () {
+  return await jwt.sign({ id: this._id }, process.env.PRIVATE_KEY, {
     expiresIn: "3d",
   });
-
-UserSchema.method.forgotPassword = async () => {
+};
+UserSchema.methods.forgotPassword = async function () {
   const forgotToken = crypto.randomBytes(20).toString("hex");
   this.forgotPasswordToken = crypto
     .createHash("sha256")
     .update(forgotToken)
     .digest("hex");
+  this.forgotPasswordExpire = Date.now + 20 * 60 * 1000;
 };
-module.exports = mongoose.model("/users", UserSchema);
+module.exports = mongoose.model("/user", UserSchema);

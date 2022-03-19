@@ -22,6 +22,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please provide an password"],
     minlength: [6, "password should be atleast 6 character"],
+    select: false,
   },
   photo: {
     id: {
@@ -66,6 +67,7 @@ UserSchema.methods.forgotPassword = async function () {
     .createHash("sha256")
     .update(forgotToken)
     .digest("hex");
-  this.forgotPasswordExpire = Date.now + 20 * 60 * 1000;
+  this.forgotPasswordExpire = new Date(Date.now() + 20 * 60 * 1000);
+  return forgotToken;
 };
 module.exports = mongoose.model("/user", UserSchema);

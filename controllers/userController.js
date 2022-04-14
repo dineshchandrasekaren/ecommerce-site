@@ -193,6 +193,7 @@ exports.updateSpecificUser = BigPromise(async (req, res, next) => {
 });
 exports.deleteSpecificUser = BigPromise(async (req, res, next) => {
   const user = await userModel.findOneAndDelete({ _id: req.params.id });
+  cloudinary.uploader.destroy(req.user.photo.id);
   if (!user) {
     return next(new Error("user not found"));
   }

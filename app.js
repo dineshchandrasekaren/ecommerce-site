@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const app = express();
 // const home = require("./Routes/home");
 const user = require("./Routes/user");
+const product = require("./Routes/product");
 const cookieParser = require("cookie-parser");
 
 // morgan middleware
@@ -28,5 +29,6 @@ app.use(express.urlencoded({ extended: true }));
 const prefix = "/api/v1"; //? url prefix
 // app.use(prefix, home);
 app.use(prefix, user);
+app.use(prefix, product);
 
 module.exports = app;

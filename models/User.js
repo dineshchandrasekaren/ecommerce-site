@@ -70,4 +70,4 @@ UserSchema.methods.forgotPassword = async function () {
   this.forgotPasswordExpire = new Date(Date.now() + 20 * 60 * 1000);
   return forgotToken;
 };
-module.exports = mongoose.model("/user", UserSchema);
+module.exports = mongoose.model("User", UserSchema);
